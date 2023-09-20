@@ -21,6 +21,7 @@ function App() {
     const tempList = [...list]
     tempList.splice(index, 1)
     setList(tempList)
+    setCurrentIndex('')
   }
   function editBtn(index) {
     const value = list[index]
