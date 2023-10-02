@@ -1,7 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
-import Result from './views/Result';
 
 const questions = [
     {
@@ -37,49 +35,62 @@ const questions = [
 ]
 function App() {
     const [questionNo, setQuestionNo] = useState(0)
-    const options = questions[questionNo].options
+    const [selectedOption, setSelectedOption] = useState()
+    const [score, setScore] = useState(0)
+    const [quizApp, setQuizApp] = useState(false)
+
+    const option = questions[questionNo].options
     const correctAnswer = questions[questionNo].correctAnswer
-    const [score , setScore] = useState(0)
-    const [correctOption , setCorrectOption] = useState()
-    const [showResult , setShowResult] = useState(false)
 
     function nextQuestion() {
-        submit()
-        let tempList = questionNo
-        setQuestionNo(++tempList)
+        updatedScore()
+        let tempQuest = questionNo
+        setQuestionNo(++tempQuest)
     }
 
-    function submit(){
-        let tempScore = score
-        if (correctOption === correctAnswer){
+    function updatedScore(){
+        
+        if (selectedOption === correctAnswer){
+            let tempScore = score
             setScore(++tempScore)
         }
-        
-    }
-    function theEnd(){
-        submit()
-        setShowResult(true)
-    }
-    function choose(e){
-        setCorrectOption(e.target.value)
     }
 
+    function finish() {
+        updatedScore()
+        setQuizApp(true)
+    }
+    function newQuiz(){
+        setQuizApp(false)
+        setQuestionNo(0)
+        setScore(0)
+    }
+    function selected(e){
+       setSelectedOption(e.target.value)
+    }
     return (
         <div className="App">
             <header className="App-header">
-                <h1>Quiz App</h1> 
-                <h4> Q{questionNo + 1})
-                    {questions[questionNo].title}
-                </h4>
+                {!quizApp ? <div>
+                <h2>Quiz App</h2>
+                <p>Q {questionNo + 1} ) {questions[questionNo].title}</p>
 
-                {options.map(function(item){
-                    return <div> <input checked={correctOption === item} onChange={choose} value={item} name='inp' type='radio'/> {item}</div>
+                {option.map(function (item) {
+                    return <div>
+                        <input name='inp' checked={selectedOption === item} 
+                        onChange={selected} value={item} type='radio' />{item}
+                    </div>
                 })}
-                <br/>
-                {questionNo === questions.length - 1 ?  <button onClick={() => theEnd('finish')}>Finish</button> :
-                <button  onClick={nextQuestion}>Next</button>
+
+                {questionNo === questions.length - 1 ?
+                    <button onClick={finish}>Submit</button> :
+                    <button onClick={nextQuestion}>Next</button>
                 }
-                {showResult && <Result finalScore={score} />} 
+                </div>
+                : <div>
+                    <p>You have corrected {score} answers from {questions.length} questions.</p>
+                    <button onClick={newQuiz}>Restart</button>
+                </div>}
             </header>
         </div>
     );
